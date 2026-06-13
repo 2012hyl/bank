@@ -22,11 +22,13 @@
     .result-box{background:#f8faff;border:2px solid #4a6cf7;border-radius:14px;padding:16px;margin-top:8px;display:none;line-height:1.8;font-size:14px;color:#333;white-space:pre-line}
     .result-box.show{display:block;animation:fadeIn 0.3s ease}
     .disclaimer{text-align:center;color:#aaa;font-size:11px;margin-top:8px}
-    .tab-bar{display:flex;gap:8px}
-    .tab{flex:1;padding:10px;text-align:center;background:#fff;border-radius:10px;font-size:13px;color:#666;cursor:pointer;border:1px solid #e0e0e0;transition:all 0.2s}
+    .tab-bar{display:flex;gap:6px;flex-wrap:wrap}
+    .tab{flex:1;min-width:60px;padding:10px 6px;text-align:center;background:#fff;border-radius:10px;font-size:12px;color:#666;cursor:pointer;border:1px solid #e0e0e0;transition:all 0.2s}
     .tab.active{background:#4a6cf7;color:#fff;border-color:#4a6cf7}
     .tool-card{display:none}
     .tool-card.active{display:block}
+    .info-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+    .info-row:last-child{border-bottom:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
@@ -34,63 +36,86 @@
 <div class="container">
   <div style="text-align:center;padding:8px 0">
     <h1 style="font-size:22px;color:#1a1a2e">🏦 AI贷款预审助手</h1>
-    <p style="font-size:12px;color:#999;margin-top:4px">银行内部逻辑 · 输入信息 · 秒出结果</p>
+    <p style="font-size:12px;color:#999;margin-top:4px">上海房贷数据 · AI预审 · 术语翻译</p>
   </div>
 
   <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('precheck')">📋 贷款预审</div>
-    <div class="tab" onclick="switchTab('compare')">📊 银行对比</div>
-    <div class="tab" onclick="switchTab('translate')">📖 术语翻译</div>
+    <div class="tab active" onclick="switchTab('precheck')">📋 AI预审</div>
+    <div class="tab" onclick="switchTab('calculator')">🧮 月供计算</div>
+    <div class="tab" onclick="switchTab('shanghai')">🏠 上海房贷</div>
+    <div class="tab" onclick="switchTab('translate')">📖 术语</div>
   </div>
 
-  <!-- 贷款预审 -->
+  <!-- AI预审 -->
   <div class="card tool-card active" id="tab-precheck">
-    <h2><span>📋</span>贷款预审</h2>
+    <h2><span>📋</span>AI贷款预审</h2>
     <label>月收入（元）</label>
-    <input type="number" id="income" placeholder="比如：8000">
-
+    <input type="number" id="income" placeholder="比如：15000">
     <label>征信情况</label>
     <select id="credit">
       <option value="good">良好 · 无逾期</option>
-      <option value="minor">轻微 · 有过1-2次短期逾期</option>
-      <option value="bad">较差 · 有多次逾期记录</option>
+      <option value="minor">轻微 · 1-2次短期逾期</option>
+      <option value="bad">较差 · 有多次逾期</option>
     </select>
-
-    <label>想贷多少（元）</label>
-    <input type="number" id="amount" placeholder="比如：200000">
-
+    <label>想贷多少（万元）</label>
+    <input type="number" id="amount" placeholder="比如：200">
     <label>贷款用途</label>
     <select id="purpose">
-      <option value="消费贷">消费贷 · 日常消费</option>
-      <option value="经营贷">经营贷 · 做生意/创业</option>
-      <option value="房贷">房贷 · 买房</option>
-      <option value="车贷">车贷 · 买车</option>
-      <option value="信用贷">信用贷 · 无抵押</option>
+      <option value="房贷">房贷</option>
+      <option value="消费贷">消费贷</option>
+      <option value="经营贷">经营贷</option>
+      <option value="车贷">车贷</option>
     </select>
-
-    <label>工作年限</label>
-    <select id="workYears">
-      <option value="less1">不到1年</option>
-      <option value="1-3">1-3年</option>
-      <option value="3-5" selected>3-5年</option>
-      <option value="5+">5年以上</option>
-    </select>
-
-    <button class="btn" id="precheckBtn" onclick="runPrecheck()">🔍 开始预审</button>
+    <button class="btn" id="precheckBtn" onclick="runPrecheck()">🔍 AI预审</button>
     <div class="result-box" id="precheckResult"></div>
   </div>
 
-  <!-- 银行对比 -->
-  <div class="card tool-card" id="tab-compare">
-    <h2><span>📊</span>银行产品对比</h2>
-    <label>贷款类型</label>
-    <select id="compareType">
-      <option value="消费贷">消费贷</option>
-      <option value="房贷">房贷</option>
-      <option value="经营贷">经营贷</option>
+  <!-- 月供计算器 -->
+  <div class="card tool-card" id="tab-calculator">
+    <h2><span>🧮</span>月供计算器</h2>
+    <label>贷款金额（万元）</label>
+    <input type="number" id="calcAmount" placeholder="比如：100" value="100">
+    <label>贷款期限（年）</label>
+    <input type="number" id="calcYears" placeholder="比如：30" value="30">
+    <label>年利率（%）</label>
+    <input type="number" id="calcRate" placeholder="比如：3.15" value="3.15" step="0.01">
+    <label>还款方式</label>
+    <select id="calcType">
+      <option value="equal">等额本息 · 每月还一样多</option>
+      <option value="principal">等额本金 · 每月递减</option>
     </select>
-    <button class="btn" onclick="runCompare()">📊 查看对比</button>
-    <div class="result-box" id="compareResult"></div>
+    <button class="btn" onclick="runCalculator()">🧮 计算月供</button>
+    <div class="result-box" id="calcResult"></div>
+  </div>
+
+  <!-- 上海房贷数据 -->
+  <div class="card tool-card" id="tab-shanghai">
+    <h2><span>🏠</span>上海房贷核心数据</h2>
+
+    <h3 style="font-size:14px;color:#4a6cf7;margin:12px 0 6px">📊 最新利率</h3>
+    <div class="info-row"><span>首套公积金 5年↓</span><span style="font-weight:600">2.35%</span></div>
+    <div class="info-row"><span>首套公积金 5年↑</span><span style="font-weight:600">2.85%</span></div>
+    <div class="info-row"><span>首套商业贷款</span><span style="font-weight:600">3.15%起</span></div>
+    <div class="info-row"><span>二套公积金 5年↓</span><span style="font-weight:600">2.775%</span></div>
+    <div class="info-row"><span>二套公积金 5年↑</span><span style="font-weight:600">3.325%</span></div>
+    <div class="info-row"><span>二套商业贷款</span><span style="font-weight:600">3.55%起</span></div>
+
+    <h3 style="font-size:14px;color:#4a6cf7;margin:12px 0 6px">💰 公积金额度</h3>
+    <div class="info-row"><span>首套 个人/家庭</span><span style="font-weight:600">65万 / 130万</span></div>
+    <div class="info-row"><span>二套 个人/家庭</span><span style="font-weight:600">50万 / 100万</span></div>
+
+    <h3 style="font-size:14px;color:#4a6cf7;margin:12px 0 6px">🏠 首付比例</h3>
+    <div class="info-row"><span>首套普通住房</span><span style="font-weight:600">20%</span></div>
+    <div class="info-row"><span>首套非普通住房</span><span style="font-weight:600">25%</span></div>
+    <div class="info-row"><span>二套普通住房</span><span style="font-weight:600">30%</span></div>
+    <div class="info-row"><span>二套非普通住房</span><span style="font-weight:600">35%</span></div>
+
+    <h3 style="font-size:14px;color:#4a6cf7;margin:12px 0 6px">✅ 首套/二套认定</h3>
+    <div class="info-row"><span>上海无房+全国无贷</span><span style="color:#27ae60">首套</span></div>
+    <div class="info-row"><span>上海无房+外地贷已还清</span><span style="color:#27ae60">首套</span></div>
+    <div class="info-row"><span>上海无房+外地贷未还</span><span style="color:#e17055">二套</span></div>
+    <div class="info-row"><span>上海有房</span><span style="color:#e17055">二套</span></div>
+    <div class="info-row"><span>全国≥2套未还清</span><span style="color:#e74c3c">停贷</span></div>
   </div>
 
   <!-- 术语翻译 -->
@@ -102,8 +127,8 @@
     <div class="result-box" id="translateResult"></div>
   </div>
 
-  <p class="disclaimer">⚠️ 本工具仅供参考，不构成任何贷款建议。具体贷款条件以银行实际审批为准。</p>
-  <p style="text-align:center;color:#ccc;font-size:10px;margin-top:-6px">由 DeepSeek V4 提供AI支持 · 14岁开发者独立制作</p>
+  <p class="disclaimer">⚠️ 本工具仅供参考，不构成贷款建议。利率以银行当天报价为准。</p>
+  <p style="text-align:center;color:#ccc;font-size:10px;margin-top:-6px">AI支持 · 14岁开发者制作</p>
 </div>
 
 <script>
@@ -122,19 +147,11 @@ async function callAI(prompt){
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{role:'user', content: prompt}],
-        temperature: 0.3,
-        max_tokens: 400,
-        stream: false
-      })
+      body: JSON.stringify({model: MODEL, messages: [{role:'user', content: prompt}], temperature: 0.3, max_tokens: 400, stream: false})
     });
     const data = await res.json();
     return data.choices?.[0]?.message?.content || '暂时无法分析，请稍后重试';
-  }catch(e){
-    return '网络连接失败，请检查网络后重试';
-  }
+  }catch(e){ return '网络连接失败，请检查网络后重试'; }
 }
 
 async function runPrecheck(){
@@ -144,68 +161,54 @@ async function runPrecheck(){
   const credit = document.getElementById('credit').value;
   const amount = document.getElementById('amount').value || '未填写';
   const purpose = document.getElementById('purpose').value;
-  const workYears = document.getElementById('workYears').value;
 
   btn.disabled = true; btn.textContent = '正在分析…';
   resultBox.classList.remove('show');
 
-  const creditMap = {good:'良好，无逾期记录', minor:'轻微，有过1-2次短期逾期', bad:'较差，有多次逾期记录'};
-  const workMap = {less1:'不到1年', '1-3':'1-3年', '3-5':'3-5年', '5+':'5年以上'};
+  const creditMap = {good:'良好，无逾期', minor:'轻微，有1-2次短期逾期', bad:'较差，有多次逾期'};
+  const prompt = `你是银行贷款预审专家。根据用户信息，给出预估可贷额度范围、预估利率、推荐期限、所需材料、审批通过概率、注意事项。直接结论，简明扼要。
 
-  const prompt = `你是银行贷款预审专家。根据以下用户信息，给出预估可贷额度范围、预估利率范围、推荐还款期限、需要准备的材料清单、审批通过概率（低/中/高）、注意事项。直接给结论，不说"建议咨询银行"这种废话。
-
-用户信息：
-- 月收入：${income}元
-- 征信：${creditMap[credit]}
-- 想贷金额：${amount}元
-- 用途：${purpose}
-- 工作年限：${workMap[workYears]}
-
-输出格式：
-📊 预估可贷额度：xxx
-📈 预估利率：xxx
-📅 推荐期限：xxx
-📋 需要材料：xxx
-🎯 通过概率：xxx
-⚠️ 注意：xxx`;
+用户信息：月收入${income}元，征信${creditMap[credit]}，想贷${amount}万元，用途${purpose}。
+输出：📊额度 📈利率 📅期限 📋材料 🎯概率 ⚠️注意`;
 
   const result = await callAI(prompt);
-  resultBox.textContent = result;
-  resultBox.classList.add('show');
+  resultBox.textContent = result; resultBox.classList.add('show');
   btn.disabled = false; btn.textContent = '🔍 重新预审';
 }
 
-function runCompare(){
-  const resultBox = document.getElementById('compareResult');
-  const type = document.getElementById('compareType').value;
+function runCalculator(){
+  const amount = parseFloat(document.getElementById('calcAmount').value) * 10000;
+  const years = parseInt(document.getElementById('calcYears').value);
+  const rate = parseFloat(document.getElementById('calcRate').value) / 100;
+  const type = document.getElementById('calcType').value;
+  const months = years * 12;
+  const monthlyRate = rate / 12;
 
-  resultBox.classList.add('show');
-  resultBox.textContent = `📊 ${type}主流银行对比（参考数据）
+  let result = '';
+  if(type === 'equal'){
+    const monthly = (amount * monthlyRate * Math.pow(1+monthlyRate, months)) / (Math.pow(1+monthlyRate, months) - 1);
+    const totalInterest = monthly * months - amount;
+    result = `📊 等额本息计算结果\n\n📅 每月还款：${Math.round(monthly).toLocaleString()} 元\n💰 总利息：${Math.round(totalInterest).toLocaleString()} 元\n💵 总还款：${Math.round(amount + totalInterest).toLocaleString()} 元`;
+  } else {
+    const monthlyPrincipal = amount / months;
+    const firstMonth = monthlyPrincipal + amount * monthlyRate;
+    const lastMonth = monthlyPrincipal + monthlyPrincipal * monthlyRate;
+    const totalInterest = (firstMonth + lastMonth) * months / 2 - amount;
+    result = `📊 等额本金计算结果\n\n📅 首月还款：${Math.round(firstMonth).toLocaleString()} 元\n📅 末月还款：${Math.round(lastMonth).toLocaleString()} 元\n💰 总利息：${Math.round(totalInterest).toLocaleString()} 元\n💵 总还款：${Math.round(amount + totalInterest).toLocaleString()} 元`;
+  }
 
-🏦 工商银行：利率3.2%起 · 期限最长30年 · 放款约15工作日
-🏦 建设银行：利率3.15%起 · 期限最长30年 · 放款约10工作日
-🏦 招商银行：利率3.3%起 · 期限最长20年 · 放款约7工作日
-🏦 平安银行：利率3.5%起 · 期限最长15年 · 放款约5工作日
-🏦 微众银行：利率3.8%起 · 期限最长5年 · 线上秒批
-
-💡 利率最低：建设银行
-💡 放款最快：微众银行
-💡 综合推荐：招商银行（利率和放款速度均衡）
-
-⚠️ 以上为公开参考数据，实际以银行审批为准`;
+  const resultBox = document.getElementById('calcResult');
+  resultBox.textContent = result; resultBox.classList.add('show');
 }
 
 async function runTranslate(){
   const term = document.getElementById('termInput').value.trim();
   const resultBox = document.getElementById('translateResult');
-  if(!term){ return; }
-
+  if(!term) return;
   resultBox.classList.remove('show');
-  const prompt = `你是银行贷款术语翻译专家。用最简单的大白话解释以下术语，让完全不懂金融的人也能听懂。解释控制在2-3句话。术语：${term}`;
-
+  const prompt = `用大白话解释银行贷款术语"${term}"，2-3句话，让完全不懂金融的人也能听懂。`;
   const result = await callAI(prompt);
-  resultBox.textContent = result;
-  resultBox.classList.add('show');
+  resultBox.textContent = result; resultBox.classList.add('show');
 }
 </script>
 </body>
